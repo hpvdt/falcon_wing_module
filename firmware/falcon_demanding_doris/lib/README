@@ -1,0 +1,15 @@
+# Project Specific Libraries
+
+Wrote some custom libraries for the spar sensor. The major one was the one wire library, however a stripped down version of a library for the HX711 chips we'll be using was written.
+
+## One Wire
+
+One wire communication system we're using for this project. A single wire system was needed to help reduce the weight of conductors in the aircraft.
+
+Communicates using edges to account for clock rates varying across the different devices on the bus.
+
+## HX711
+
+Wrote a custom library for this rather than re-using existing code so iut would be better optimized for the hardware. It was written to be the minimum amount of code needed to interface with the HX711 while also making use of the hardware specific to the chip used to be faster at doing reads.
+
+Since the spar sensors will only be reading a single channel and sending the raw ADC value onwards to the motherboard, that's all this library was designed to do.
