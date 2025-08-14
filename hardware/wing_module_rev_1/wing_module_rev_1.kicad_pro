@@ -638,6 +638,18 @@
     [
       "7b7fffa9-e888-4279-94bf-385d74cf78f9",
       "Root"
+    ],
+    [
+      "0600a7c1-aaf8-4e35-a4dc-6a72af769bde",
+      "Power"
+    ],
+    [
+      "424e4183-41f2-435c-8d3d-5784f425df45",
+      "Strain Gauges"
+    ],
+    [
+      "f20f1d55-4513-4ee1-ac5d-1656e10991e6",
+      "CAN"
     ]
   ],
   "text_variables": {}
