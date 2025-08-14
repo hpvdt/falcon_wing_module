@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "wing_module")(type "KiCad")(uri "${KIPRJMOD}/wing_module.kicad_sym")(options "")(descr ""))
+)
