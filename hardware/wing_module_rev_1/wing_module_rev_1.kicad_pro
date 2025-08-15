@@ -226,7 +226,16 @@
     "equivalence_files": []
   },
   "erc": {
-    "erc_exclusions": [],
+    "erc_exclusions": [
+      [
+        "multiple_net_names|1536700|1079500|f3870007-208f-4f53-af64-8a35edf63500|051281bd-ede3-4876-8824-8e2737ec212d|/7b7fffa9-e888-4279-94bf-385d74cf78f9/424e4183-41f2-435c-8d3d-5784f425df45|/7b7fffa9-e888-4279-94bf-385d74cf78f9/424e4183-41f2-435c-8d3d-5784f425df45|/7b7fffa9-e888-4279-94bf-385d74cf78f9/424e4183-41f2-435c-8d3d-5784f425df45",
+        ""
+      ],
+      [
+        "multiple_net_names|1892300|698500|1549610e-67e0-47ac-9c57-c06d86398774|cb9e39cc-77fa-4569-8213-16f7f1ccf585|/7b7fffa9-e888-4279-94bf-385d74cf78f9/0600a7c1-aaf8-4e35-a4dc-6a72af769bde|/7b7fffa9-e888-4279-94bf-385d74cf78f9/0600a7c1-aaf8-4e35-a4dc-6a72af769bde|/7b7fffa9-e888-4279-94bf-385d74cf78f9/0600a7c1-aaf8-4e35-a4dc-6a72af769bde",
+        ""
+      ]
+    ],
     "meta": {
       "version": 0
     },
