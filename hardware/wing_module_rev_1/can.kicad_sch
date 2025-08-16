@@ -1389,16 +1389,16 @@
 		(uuid "af29ed0c-316d-4fa2-96b6-50500705fa49")
 	)
 	(junction
+		(at 179.07 76.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "cf304c0e-1ef0-44cb-8980-b94b5a574911")
+	)
+	(junction
 		(at 165.1 83.82)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e77d20bc-cbf8-42a0-91db-fec2c41f21e9")
-	)
-	(junction
-		(at 184.15 76.2)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ebad5a5e-7b92-4709-8995-c167d1fa1210")
 	)
 	(wire
 		(pts
@@ -1422,7 +1422,7 @@
 	)
 	(wire
 		(pts
-			(xy 184.15 74.93) (xy 184.15 76.2)
+			(xy 179.07 74.93) (xy 179.07 76.2)
 		)
 		(stroke
 			(width 0)
@@ -1432,7 +1432,7 @@
 	)
 	(wire
 		(pts
-			(xy 179.07 81.28) (xy 185.42 81.28)
+			(xy 184.15 78.74) (xy 190.5 78.74)
 		)
 		(stroke
 			(width 0)
@@ -1462,6 +1462,16 @@
 	)
 	(wire
 		(pts
+			(xy 179.07 76.2) (xy 175.26 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "24f05ed7-1d51-4cef-bd00-d211118f44a9")
+	)
+	(wire
+		(pts
 			(xy 184.15 85.09) (xy 184.15 83.82)
 		)
 		(stroke
@@ -1472,7 +1482,7 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 110.49) (xy 185.42 110.49)
+			(xy 182.88 113.03) (xy 185.42 113.03)
 		)
 		(stroke
 			(width 0)
@@ -1492,7 +1502,7 @@
 	)
 	(wire
 		(pts
-			(xy 179.07 78.74) (xy 185.42 78.74)
+			(xy 184.15 76.2) (xy 190.5 76.2)
 		)
 		(stroke
 			(width 0)
@@ -1512,7 +1522,7 @@
 	)
 	(wire
 		(pts
-			(xy 184.15 83.82) (xy 185.42 83.82)
+			(xy 184.15 83.82) (xy 190.5 83.82)
 		)
 		(stroke
 			(width 0)
@@ -1522,7 +1532,7 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 102.87) (xy 185.42 102.87)
+			(xy 182.88 110.49) (xy 185.42 110.49)
 		)
 		(stroke
 			(width 0)
@@ -1652,16 +1662,6 @@
 	)
 	(wire
 		(pts
-			(xy 184.15 76.2) (xy 175.26 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9e772922-7f47-45b9-94c9-48cdd91bbd5d")
-	)
-	(wire
-		(pts
 			(xy 132.08 92.71) (xy 132.08 100.33)
 		)
 		(stroke
@@ -1702,16 +1702,6 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 101.6) (xy 182.88 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c2e2cc63-1a47-47a5-93cb-fb4c41e78c75")
-	)
-	(wire
-		(pts
 			(xy 172.72 114.3) (xy 160.02 114.3)
 		)
 		(stroke
@@ -1719,16 +1709,6 @@
 			(type default)
 		)
 		(uuid "c3b63074-bb2b-40a8-a1f0-6d24b657cf08")
-	)
-	(wire
-		(pts
-			(xy 184.15 76.2) (xy 185.42 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cad7cdc7-89aa-4027-bb0a-4e8d9636b91c")
 	)
 	(wire
 		(pts
@@ -1782,7 +1762,7 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 111.76) (xy 182.88 110.49)
+			(xy 182.88 114.3) (xy 182.88 113.03)
 		)
 		(stroke
 			(width 0)
@@ -1812,6 +1792,16 @@
 	)
 	(wire
 		(pts
+			(xy 179.07 81.28) (xy 190.5 81.28)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fbc507b6-ef2e-42b8-81ca-b35320db0342")
+	)
+	(wire
+		(pts
 			(xy 132.08 120.65) (xy 132.08 118.11)
 		)
 		(stroke
@@ -1819,6 +1809,16 @@
 			(type default)
 		)
 		(uuid "fbd585aa-bb1a-4518-997c-de95f1a51b01")
+	)
+	(wire
+		(pts
+			(xy 179.07 81.28) (xy 179.07 76.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fd84bdfa-53cd-4609-87dc-21b708e812fc")
 	)
 	(wire
 		(pts
@@ -1851,7 +1851,7 @@
 		(uuid "0cacee0a-b032-4f4c-96de-c1b28b6c14e6")
 	)
 	(label "CANL"
-		(at 179.07 81.28 0)
+		(at 184.15 78.74 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1871,7 +1871,7 @@
 		(uuid "bb9160bf-da49-4053-ae69-d937505aa87c")
 	)
 	(label "CANH"
-		(at 179.07 78.74 0)
+		(at 184.15 76.2 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1914,7 +1914,7 @@
 	)
 	(symbol
 		(lib_id "power:+BATT")
-		(at 182.88 101.6 0)
+		(at 182.88 110.49 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1923,7 +1923,7 @@
 		(fields_autoplaced yes)
 		(uuid "0cb2bd9c-c21b-4c9c-a7d6-3088ae5656ef")
 		(property "Reference" "#PWR049"
-			(at 182.88 105.41 0)
+			(at 186.69 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1932,15 +1932,16 @@
 			)
 		)
 		(property "Value" "+BATT"
-			(at 182.88 96.52 0)
+			(at 179.07 110.4899 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 182.88 101.6 0)
+			(at 182.88 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1949,7 +1950,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 182.88 101.6 0)
+			(at 182.88 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1958,7 +1959,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+BATT\""
-			(at 182.88 101.6 0)
+			(at 182.88 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1980,7 +1981,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x04")
-		(at 190.5 107.95 0)
+		(at 190.5 110.49 0)
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
@@ -1989,7 +1990,7 @@
 		(dnp no)
 		(uuid "0e0d3807-a55c-4339-aa71-4ce52fc9b922")
 		(property "Reference" "J8"
-			(at 193.04 107.9501 0)
+			(at 193.04 110.4901 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1998,7 +1999,7 @@
 			)
 		)
 		(property "Value" "Conn_01x04"
-			(at 193.04 105.4101 0)
+			(at 193.04 107.9501 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2007,7 +2008,7 @@
 			)
 		)
 		(property "Footprint" "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical"
-			(at 190.5 107.95 0)
+			(at 190.5 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2016,7 +2017,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 190.5 107.95 0)
+			(at 190.5 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2025,7 +2026,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 190.5 107.95 0)
+			(at 190.5 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2034,7 +2035,7 @@
 			)
 		)
 		(property "LCSC" "C160258"
-			(at 190.5 107.95 0)
+			(at 190.5 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2807,7 +2808,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 182.88 111.76 0)
+		(at 182.88 114.3 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -2816,7 +2817,7 @@
 		(fields_autoplaced yes)
 		(uuid "e45213e3-8f77-486b-94fa-401a22320952")
 		(property "Reference" "#PWR050"
-			(at 182.88 118.11 0)
+			(at 182.88 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2825,7 +2826,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 182.88 116.84 0)
+			(at 182.88 119.38 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2833,7 +2834,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 182.88 111.76 0)
+			(at 182.88 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2842,7 +2843,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 182.88 111.76 0)
+			(at 182.88 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2851,7 +2852,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 182.88 111.76 0)
+			(at 182.88 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2873,7 +2874,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x04")
-		(at 190.5 81.28 0)
+		(at 195.58 81.28 0)
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
@@ -2882,7 +2883,7 @@
 		(dnp no)
 		(uuid "e4798120-f8df-4e50-a56e-10636c6f883b")
 		(property "Reference" "J7"
-			(at 193.04 81.2801 0)
+			(at 198.12 81.2801 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2891,7 +2892,7 @@
 			)
 		)
 		(property "Value" "Conn_01x04"
-			(at 193.04 78.7401 0)
+			(at 198.12 78.7401 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2900,7 +2901,7 @@
 			)
 		)
 		(property "Footprint" "Connector_JST:JST_EH_B4B-EH-A_1x04_P2.50mm_Vertical"
-			(at 190.5 81.28 0)
+			(at 195.58 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2909,7 +2910,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 190.5 81.28 0)
+			(at 195.58 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2918,7 +2919,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 190.5 81.28 0)
+			(at 195.58 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2927,7 +2928,7 @@
 			)
 		)
 		(property "LCSC" "C160258"
-			(at 190.5 81.28 0)
+			(at 195.58 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3118,7 +3119,7 @@
 	)
 	(symbol
 		(lib_id "power:+BATT")
-		(at 184.15 74.93 0)
+		(at 179.07 74.93 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3127,7 +3128,7 @@
 		(fields_autoplaced yes)
 		(uuid "f4aceefc-4b60-48d5-b6f6-6970de50b8d8")
 		(property "Reference" "#PWR051"
-			(at 184.15 78.74 0)
+			(at 179.07 78.74 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3136,7 +3137,7 @@
 			)
 		)
 		(property "Value" "+BATT"
-			(at 184.15 69.85 0)
+			(at 179.07 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3144,7 +3145,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 184.15 74.93 0)
+			(at 179.07 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3153,7 +3154,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 184.15 74.93 0)
+			(at 179.07 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3162,7 +3163,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+BATT\""
-			(at 184.15 74.93 0)
+			(at 179.07 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
