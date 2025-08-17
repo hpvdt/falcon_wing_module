@@ -69,18 +69,18 @@ void Error_Handler(void);
 #define ADS_DATA_RDY_GPIO_Port GPIOA
 #define ANG_POT_Pin GPIO_PIN_0
 #define ANG_POT_GPIO_Port GPIOB
-#define ADDR_4_Pin GPIO_PIN_1
-#define ADDR_4_GPIO_Port GPIOB
-#define ADDR_3_Pin GPIO_PIN_2
-#define ADDR_3_GPIO_Port GPIOB
+#define ADDR_2_Pin GPIO_PIN_1
+#define ADDR_2_GPIO_Port GPIOB
+#define ADDR_1_Pin GPIO_PIN_2
+#define ADDR_1_GPIO_Port GPIOB
 #define ADC_CLK_IN_Pin GPIO_PIN_8
 #define ADC_CLK_IN_GPIO_Port GPIOA
 #define ADDR_0_Pin GPIO_PIN_15
 #define ADDR_0_GPIO_Port GPIOA
-#define ADDR_1_Pin GPIO_PIN_3
-#define ADDR_1_GPIO_Port GPIOB
-#define ADDR_2_Pin GPIO_PIN_4
-#define ADDR_2_GPIO_Port GPIOB
+#define ADDR_3_Pin GPIO_PIN_3
+#define ADDR_3_GPIO_Port GPIOB
+#define ADDR_4_Pin GPIO_PIN_4
+#define ADDR_4_GPIO_Port GPIOB
 #define SERVO_PWM_Pin GPIO_PIN_5
 #define SERVO_PWM_GPIO_Port GPIOB
 
