@@ -1339,12 +1339,6 @@
 		(uuid "a2658d1a-6272-4e05-85d4-59aba68e7fe6")
 	)
 	(junction
-		(at 198.12 92.71)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "bc4169a7-c8b2-40eb-8b38-685d4ebd0948")
-	)
-	(junction
 		(at 110.49 118.11)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1416,7 +1410,7 @@
 	)
 	(wire
 		(pts
-			(xy 199.39 92.71) (xy 198.12 92.71)
+			(xy 184.15 92.71) (xy 187.96 92.71)
 		)
 		(stroke
 			(width 0)
@@ -1826,26 +1820,6 @@
 	)
 	(wire
 		(pts
-			(xy 198.12 72.39) (xy 198.12 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cb677ca0-cf8f-430c-b9fd-62679793fae3")
-	)
-	(wire
-		(pts
-			(xy 184.15 92.71) (xy 198.12 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d222dcf8-d298-40ae-ae9c-be8ec51e22a1")
-	)
-	(wire
-		(pts
 			(xy 231.14 77.47) (xy 231.14 80.01)
 		)
 		(stroke
@@ -2087,7 +2061,7 @@
 	)
 	(hierarchical_label "~{CS}_{ADC}"
 		(shape input)
-		(at 199.39 92.71 0)
+		(at 187.96 92.71 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2525,85 +2499,6 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 198.12 68.58 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "37d5ce7c-06ae-4e51-a01a-963308c4e56e")
-		(property "Reference" "R15"
-			(at 200.66 67.3099 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "10k"
-			(at 200.66 69.8499 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 196.342 68.58 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 198.12 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Resistor"
-			(at 198.12 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" "C723353"
-			(at 198.12 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e33c375d-097e-47da-bdd5-0e4ecd7f9a1f")
-		)
-		(pin "2"
-			(uuid "5a1d7e95-29f2-4717-9c80-e450a4b98196")
-		)
-		(instances
-			(project "wing_module_rev_1"
-				(path "/7b7fffa9-e888-4279-94bf-385d74cf78f9/424e4183-41f2-435c-8d3d-5784f425df45"
-					(reference "R15")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:R")
 		(at 99.06 80.01 90)
 		(unit 1)
 		(exclude_from_sim no)
@@ -2749,72 +2644,6 @@
 			(project "wing_module_rev_1"
 				(path "/7b7fffa9-e888-4279-94bf-385d74cf78f9/424e4183-41f2-435c-8d3d-5784f425df45"
 					(reference "R11")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3V3")
-		(at 198.12 64.77 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5de13df6-673d-4448-916b-f77d33d41d30")
-		(property "Reference" "#PWR043"
-			(at 198.12 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 198.12 61.214 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 198.12 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 198.12 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 198.12 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "eeb6ecab-c323-47af-8d44-0e287a85cc76")
-		)
-		(instances
-			(project "wing_module_rev_1"
-				(path "/7b7fffa9-e888-4279-94bf-385d74cf78f9/424e4183-41f2-435c-8d3d-5784f425df45"
-					(reference "#PWR043")
 					(unit 1)
 				)
 			)
