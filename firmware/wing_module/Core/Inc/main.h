@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "wing_module_config.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -56,6 +56,9 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
+// Since we have two FIFOs, I'll use one for configuration messages and the other for commands to the module
+void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeDef* can);
+void can_process_control_message(struct WingModuleConfig* config, CAN_HandleTypeDef* can);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

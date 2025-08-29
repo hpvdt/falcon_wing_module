@@ -21,7 +21,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "wing_module_config.h"
+#include "can_wrapper.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +58,7 @@ TIM_HandleTypeDef htim3;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
+struct WingModuleConfig config;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,6 +78,80 @@ static void MX_I2C1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// Since we have two FIFOs, I'll use one for configuration messages and the other for commands to the module
+void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeDef* can) {
+	int messages = HAL_CAN_GetRxFifoFillLevel(can, CAN_CONFIG_FIFO);
+
+	for (int i = 0; i < messages; i++) {
+		CAN_RxHeaderTypeDef header;
+		uint8_t buffer[8];
+		HAL_CAN_GetRxMessage(can, CAN_CONFIG_FIFO, &header, buffer);
+
+		unsigned int config_type = (header.StdId >> 5) & 0x7;
+
+		void* destination = NULL;
+		size_t length_to_consider = 0;
+
+		switch (config_type) {
+		case CONFIG_MESSAGE_GENERAL:
+			destination = &config->general;
+			length_to_consider = sizeof(struct WingModuleGeneralConfig);
+			break;
+		case CONFIG_MESSAGE_SERVO:
+			destination = &config->servo;
+			length_to_consider = sizeof(struct WingModuleServoConfig);
+			break;
+		case CONFIG_MESSAGE_TORSION:
+			destination = &config->torsion;
+			length_to_consider = sizeof(struct WingModuleStrainGaugeConfig);
+			break;
+		case CONFIG_MESSAGE_STRAIN:
+			destination = &config->strain;
+			length_to_consider = sizeof(struct WingModuleStrainGaugeConfig);
+			break;
+		case CONFIG_MESSAGE_INDICATOR:
+			destination = &config->indicator;
+			length_to_consider = sizeof(struct WingModuleIndicatorConfig);
+			break;
+		case CONFIG_MESSAGE_LIDAR:
+			destination = &config->lidar;
+			length_to_consider = sizeof(struct WingModuleLidarConfig);
+			break;
+		default:
+			continue; // Ignore unrecognized messages
+		}
+
+		// Mask out the received configuration
+		config->configuration_needed &= ~(1 << config_type);
+
+		// Check if it is new compared to the previous data, since some need adjustment procedures
+		bool matches_old = memcmp(destination, buffer, length_to_consider) == 0;
+		if (matches_old) continue;
+
+		memcpy(destination, buffer, length_to_consider);
+
+		// Need to update CAN filters if the configuration changes
+		switch (config_type) {
+		case CONFIG_MESSAGE_GENERAL:
+			can_update_filters(config, can);
+			break;
+		case CONFIG_MESSAGE_SERVO:
+			break;
+		case CONFIG_MESSAGE_TORSION:
+			break;
+		case CONFIG_MESSAGE_STRAIN:
+			break;
+		case CONFIG_MESSAGE_INDICATOR:
+			break;
+		case CONFIG_MESSAGE_LIDAR:
+			break;
+		}
+	}
+}
+
+void can_process_control_message(struct WingModuleConfig* config, CAN_HandleTypeDef* can) {
+
+}
 /* USER CODE END 0 */
 
 /**
@@ -114,6 +192,19 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
+  config.node_id = 0;
+  const bool ADDRESS_ACTIVE = true;
+  if (HAL_GPIO_ReadPin(ADDR_0_GPIO_Port, ADDR_0_Pin) == ADDRESS_ACTIVE) config.node_id += 1;
+  if (HAL_GPIO_ReadPin(ADDR_1_GPIO_Port, ADDR_1_Pin) == ADDRESS_ACTIVE) config.node_id += 2;
+  if (HAL_GPIO_ReadPin(ADDR_2_GPIO_Port, ADDR_2_Pin) == ADDRESS_ACTIVE) config.node_id += 4;
+  if (HAL_GPIO_ReadPin(ADDR_3_GPIO_Port, ADDR_3_Pin) == ADDRESS_ACTIVE) config.node_id += 8;
+  if (HAL_GPIO_ReadPin(ADDR_4_GPIO_Port, ADDR_4_Pin) == ADDRESS_ACTIVE) config.node_id += 16;
+  printf("Recorded node ID as %d\n", config.node_id);
+
+  config.configuration_needed = 0xFF; // Mark need for all configuration
+  // Perhaps in the future we can read in previous configuration from flash here
+
+  can_update_filters(&config, &hcan);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -253,6 +344,7 @@ static void MX_CAN_Init(void)
   }
   /* USER CODE BEGIN CAN_Init 2 */
 
+  HAL_CAN_RxFifo0MsgPendingCallback(&hcan);
   /* USER CODE END CAN_Init 2 */
 
 }
@@ -412,11 +504,11 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
+  htim3.Init.Prescaler = 63;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 65535;
+  htim3.Init.Period = 50000;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
     Error_Handler();
