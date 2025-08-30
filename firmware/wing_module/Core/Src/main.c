@@ -134,6 +134,14 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 		// Need to update CAN filters if the configuration changes
 		switch (config_type) {
 		case CONFIG_MESSAGE_GENERAL:
+			// Reset configuration
+			config->configuration_needed = 0;
+			if (config->general.driving_servo) config->configuration_needed |= 1 << CONFIG_MESSAGE_SERVO;
+			if (config->general.measuring_torsion) config->configuration_needed |= 1 << CONFIG_MESSAGE_TORSION;
+			if (config->general.measuring_strain) config->configuration_needed |= 1 << CONFIG_MESSAGE_STRAIN;
+			if (config->general.operating_indicator) config->configuration_needed |= 1 << CONFIG_MESSAGE_INDICATOR;
+			if (config->general.measure_lidar) config->configuration_needed |= 1 << CONFIG_MESSAGE_LIDAR;
+
 			can_update_filters(config, can);
 			break;
 		case CONFIG_MESSAGE_SERVO:
@@ -220,7 +228,7 @@ int main(void)
 	if (HAL_GPIO_ReadPin(ADDR_4_GPIO_Port, ADDR_4_Pin) == ADDRESS_ACTIVE) config.node_id += 16;
 	printf("Recorded node ID as %d\n", config.node_id);
 
-	config.configuration_needed = 0xFF; // Mark need for all configuration
+	config.configuration_needed = (1 << CONFIG_MESSAGE_GENERAL); // Mark need for main configuration
 	// Perhaps in the future we can read in previous configuration from flash here
 
 	can_update_filters(&config, &hcan);
@@ -249,7 +257,6 @@ int main(void)
 		static uint32_t tick_mark_broadcast_ms = 0;
 		if (CURRENT_TICK > tick_mark_broadcast_ms) {
 			tick_mark_broadcast_ms = CURRENT_TICK + config.general.update_period_ms;
-
 
 			if (config.general.measuring_strain || config.general.measuring_torsion) {
 				struct WingStrainGaugeBroadcast msg = {
