@@ -20,6 +20,11 @@ enum ConfigMessageID {
 	CONFIG_MESSAGE_LIDAR 		= 5,
 };
 
+struct WingStrainGaugeBroadcast {
+	float strain_reading;
+	float torsion_reading;
+};
+
 // Mask defines bits that MUST match
 #define CAN_CONFIG_ID_BASE				0x600
 #define CAN_CONFIG_MASK					0x71F
@@ -46,6 +51,8 @@ enum ConfigMessageID {
 
 #define CAN_CONFIG_FIFO 				CAN_FILTER_FIFO0
 #define CAN_COMMAND_FIFO 				CAN_FILTER_FIFO1
+
+#define CAN_BROADCAST_STRAIN_ID_BASE	0x020
 
 void can_update_filters(struct WingModuleConfig* config, CAN_HandleTypeDef* can);
 

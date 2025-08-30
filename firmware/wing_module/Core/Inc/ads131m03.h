@@ -8,6 +8,8 @@
 #include "stm32f1xx_hal_gpio.h"
 #include "stm32f1xx_hal_spi.h"
 
+#include "wing_module_config.h"
+
 enum ADSRegisterAddress {
   ADS_REG_ID            = 0x00,
   ADS_REG_STATUS        = 0x01,
@@ -146,11 +148,43 @@ struct ADSGainRegister {
 	uint8_t RESERVE_0_C : 5; // Write 0
 };
 
+enum ADSChannel {
+	ADS_CHANNEL_STRAIN = 0,
+	ADS_CHANNEL_TORSION = 1,
+	ADS_CHANNEL_UNUSED = 2, // Not connected to anything on the PCB
+};
+
+struct ADSChannelProcessingConfig {
+	uint16_t buffer_length;
+	enum ADSPGAGain gain;
+	enum ADSOSRRatio  osr;
+	int32_t zero_point;
+	float scaling_factor;
+};
+
+/**
+ * @brief Initializes communication with the ADS131M03 chip
+ */
 void ads_begin(struct ADSConfig config);
+
+/**
+ * @brief Resets the ADS131M03 chip
+ *
+ * @note Uses the SYNC/RESET pin so a reset can be performed regardless of the state of the SPI bus
+ */
 void ads_reset();
 
+/**
+ * @brief Issues a single (short) command and returns response of previous command
+ * @note Note to be used for Writing to any number of registers or reading multiple registers (single reads are ok)
+ *
+ * @param command Command type to perform
+ * @return Response to previous command
+ */
 uint16_t ads_command(uint16_t command);
-void ads_read_channels(int32_t* destination);
+float ads_read_channel(enum ADSChannel);
 void ads_update_channels();
+
+void ads_configure_channel(enum ADSChannel channel, struct ADSChannelProcessingConfig config);
 
 #endif

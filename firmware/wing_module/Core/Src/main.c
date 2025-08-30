@@ -122,12 +122,12 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 			continue; // Ignore unrecognized messages
 		}
 
-		// Mask out the received configuration
-		config->configuration_needed &= ~(1 << config_type);
-
 		// Check if it is new compared to the previous data, since some need adjustment procedures
 		bool matches_old = memcmp(destination, buffer, length_to_consider) == 0;
-		if (matches_old) continue;
+		if (matches_old && !(config->configuration_needed & (1 << config_type))) continue;
+
+		// Mask out the received configuration
+		config->configuration_needed &= ~(1 << config_type);
 
 		memcpy(destination, buffer, length_to_consider);
 
@@ -139,8 +139,26 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 		case CONFIG_MESSAGE_SERVO:
 			break;
 		case CONFIG_MESSAGE_TORSION:
+			struct ADSChannelProcessingConfig temp_torsion = {
+				.buffer_length = 64 * (config->torsion.buffer_depth_64_samples + 1),
+				.gain = config->torsion.gain,
+				.osr = config->torsion.osr,
+				.zero_point = config->torsion.zero_point,
+				.scaling_factor = config->torsion.scaling_factor,
+			};
+
+			ads_configure_channel(ADS_CHANNEL_TORSION, temp_torsion);
 			break;
 		case CONFIG_MESSAGE_STRAIN:
+			struct ADSChannelProcessingConfig temp_strain = {
+				.buffer_length = 64 * (config->strain.buffer_depth_64_samples + 1),
+				.gain = config->strain.gain,
+				.osr = config->strain.osr,
+				.zero_point = config->strain.zero_point,
+				.scaling_factor = config->strain.scaling_factor,
+			};
+
+			ads_configure_channel(ADS_CHANNEL_STRAIN,temp_strain);
 			break;
 		case CONFIG_MESSAGE_INDICATOR:
 			break;
@@ -223,12 +241,49 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+	while (1) {
+		const uint32_t CURRENT_TICK = HAL_GetTick();
+
+		ads_update_channels();
+
+		static uint32_t tick_mark_broadcast_ms = 0;
+		if (CURRENT_TICK > tick_mark_broadcast_ms) {
+			tick_mark_broadcast_ms = CURRENT_TICK + config.general.update_period_ms;
+
+
+			if (config.general.measuring_strain || config.general.measuring_torsion) {
+				struct WingStrainGaugeBroadcast msg = {
+					.strain_reading = 0,
+					.torsion_reading = 0,
+				};
+				if (config.general.measuring_strain) msg.strain_reading = ads_read_channel(ADS_CHANNEL_STRAIN);
+				if (config.general.measuring_torsion) msg.torsion_reading = ads_read_channel(ADS_CHANNEL_TORSION);
+
+				printf("T: %11d\tS: %11d\n", (int)msg.torsion_reading, (int)msg.strain_reading);
+
+				CAN_TxHeaderTypeDef strain_gauge_header = {
+					.StdId = CAN_BROADCAST_STRAIN_ID_BASE | config.node_id,
+					.DLC = sizeof(struct WingStrainGaugeBroadcast),
+					.ExtId = 0,
+					.IDE = CAN_ID_STD,
+					.RTR = CAN_RTR_DATA,
+					.TransmitGlobalTime = DISABLE,
+				};
+				uint32_t mailbox;
+				if (HAL_CAN_AddTxMessage(&hcan, &strain_gauge_header, (uint8_t*) &msg, &mailbox) == HAL_OK) {
+					printf("SENT STRAIN READINGS OVER CAN\n");
+				}
+			}
+		}
+
+		while (HAL_CAN_GetRxFifoFillLevel(&hcan, CAN_CONFIG_FIFO) > 0) {
+			can_process_config_message(&config, &hcan);
+		}
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+	}
   /* USER CODE END 3 */
 }
 

@@ -41,12 +41,11 @@ struct WingModuleServoConfig {
 };
 
 struct WingModuleStrainGaugeConfig {
-	uint8_t buffer_depth : 8;
 	int8_t osr : 3;
 	uint8_t gain : 3;
-	uint8_t RESERVE : 2;
+	uint8_t buffer_depth_64_samples : 2; // Allows some control of the buffer size
 	int32_t zero_point : 24;
-	int32_t division_factor : 24; // What to divide the average by to get final value
+	float scaling_factor; // What to multiply the average by to get final value
 };
 
 struct WingModuleLidarConfig {
