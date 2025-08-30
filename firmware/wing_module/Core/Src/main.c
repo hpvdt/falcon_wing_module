@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include "ads131m03.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -192,19 +193,32 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
-  config.node_id = 0;
-  const bool ADDRESS_ACTIVE = true;
-  if (HAL_GPIO_ReadPin(ADDR_0_GPIO_Port, ADDR_0_Pin) == ADDRESS_ACTIVE) config.node_id += 1;
-  if (HAL_GPIO_ReadPin(ADDR_1_GPIO_Port, ADDR_1_Pin) == ADDRESS_ACTIVE) config.node_id += 2;
-  if (HAL_GPIO_ReadPin(ADDR_2_GPIO_Port, ADDR_2_Pin) == ADDRESS_ACTIVE) config.node_id += 4;
-  if (HAL_GPIO_ReadPin(ADDR_3_GPIO_Port, ADDR_3_Pin) == ADDRESS_ACTIVE) config.node_id += 8;
-  if (HAL_GPIO_ReadPin(ADDR_4_GPIO_Port, ADDR_4_Pin) == ADDRESS_ACTIVE) config.node_id += 16;
-  printf("Recorded node ID as %d\n", config.node_id);
+	config.node_id = 0;
+	const bool ADDRESS_ACTIVE = true;
+	if (HAL_GPIO_ReadPin(ADDR_0_GPIO_Port, ADDR_0_Pin) == ADDRESS_ACTIVE) config.node_id += 1;
+	if (HAL_GPIO_ReadPin(ADDR_1_GPIO_Port, ADDR_1_Pin) == ADDRESS_ACTIVE) config.node_id += 2;
+	if (HAL_GPIO_ReadPin(ADDR_2_GPIO_Port, ADDR_2_Pin) == ADDRESS_ACTIVE) config.node_id += 4;
+	if (HAL_GPIO_ReadPin(ADDR_3_GPIO_Port, ADDR_3_Pin) == ADDRESS_ACTIVE) config.node_id += 8;
+	if (HAL_GPIO_ReadPin(ADDR_4_GPIO_Port, ADDR_4_Pin) == ADDRESS_ACTIVE) config.node_id += 16;
+	printf("Recorded node ID as %d\n", config.node_id);
 
-  config.configuration_needed = 0xFF; // Mark need for all configuration
-  // Perhaps in the future we can read in previous configuration from flash here
+	config.configuration_needed = 0xFF; // Mark need for all configuration
+	// Perhaps in the future we can read in previous configuration from flash here
 
-  can_update_filters(&config, &hcan);
+	can_update_filters(&config, &hcan);
+
+	struct ADSConfig ads_config = {
+		.bus = &hspi1,
+		.cs_pin = ADS_CS_Pin,
+		.cs_port = ADS_CS_GPIO_Port,
+		.reset_pin = ADS_RESET_Pin,
+		.reset_port = ADS_RESET_GPIO_Port,
+		.data_ready_pin = ADS_DATA_RDY_Pin,
+		.data_ready_port = ADS_DATA_RDY_GPIO_Port,
+	};
+	ads_begin(ads_config);
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -404,9 +418,9 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_HARD_OUTPUT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -593,14 +607,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(ADS_RESET_GPIO_Port, ADS_RESET_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, ADS_RESET_Pin|ADS_CS_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : ADS_RESET_Pin */
-  GPIO_InitStruct.Pin = ADS_RESET_Pin;
+  /*Configure GPIO pins : ADS_RESET_Pin ADS_CS_Pin */
+  GPIO_InitStruct.Pin = ADS_RESET_Pin|ADS_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(ADS_RESET_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : ADS_DATA_RDY_Pin */
   GPIO_InitStruct.Pin = ADS_DATA_RDY_Pin;

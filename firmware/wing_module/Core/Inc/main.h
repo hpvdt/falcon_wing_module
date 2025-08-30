@@ -70,6 +70,8 @@ void can_process_control_message(struct WingModuleConfig* config, CAN_HandleType
 #define ADS_RESET_GPIO_Port GPIOA
 #define ADS_DATA_RDY_Pin GPIO_PIN_3
 #define ADS_DATA_RDY_GPIO_Port GPIOA
+#define ADS_CS_Pin GPIO_PIN_4
+#define ADS_CS_GPIO_Port GPIOA
 #define ANG_POT_Pin GPIO_PIN_0
 #define ANG_POT_GPIO_Port GPIOB
 #define ADDR_2_Pin GPIO_PIN_1
