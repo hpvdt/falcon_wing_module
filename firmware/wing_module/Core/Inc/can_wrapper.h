@@ -20,7 +20,7 @@ enum ConfigMessageID {
 	CONFIG_MESSAGE_LIDAR 		= 5,
 };
 
-struct WingStrainGaugeBroadcast {
+struct WingLoadBroadcast {
 	float strain_reading;
 	float torsion_reading;
 };
@@ -52,7 +52,9 @@ struct WingStrainGaugeBroadcast {
 #define CAN_CONFIG_FIFO 				CAN_FILTER_FIFO0
 #define CAN_COMMAND_FIFO 				CAN_FILTER_FIFO1
 
-#define CAN_BROADCAST_STRAIN_ID_BASE	0x020
+#define CAN_BROADCAST_ANGLE_ID_BASE		0x200
+#define CAN_BROADCAST_LOAD_ID_BASE		0x220
+#define CAN_BROADCAST_LIDAR_ID_BASE		0x240
 
 void can_update_filters(struct WingModuleConfig* config, CAN_HandleTypeDef* can);
 
