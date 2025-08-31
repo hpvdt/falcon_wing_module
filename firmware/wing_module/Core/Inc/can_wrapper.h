@@ -8,6 +8,8 @@
 #ifndef INC_FALCON_CAN_H_
 #define INC_FALCON_CAN_H_
 
+#include <stdint.h>
+
 #include "stm32f1xx_hal.h"
 #include "wing_module_config.h"
 
@@ -23,6 +25,14 @@ enum ConfigMessageID {
 struct WingLoadBroadcast {
 	float strain_reading;
 	float torsion_reading;
+};
+
+struct WingLightCommand {
+	uint8_t pulse_count : 8;
+	uint8_t heart_beat_max_duty : 8;
+	uint8_t heart_beat_min_duty : 8;
+	uint16_t pulse_period_on_ms : 16;
+	uint16_t pulse_period_off_ms : 16;
 };
 
 // Mask defines bits that MUST match

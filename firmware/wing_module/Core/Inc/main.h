@@ -58,7 +58,6 @@ void Error_Handler(void);
 
 // Since we have two FIFOs, I'll use one for configuration messages and the other for commands to the module
 void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeDef* can);
-void can_process_control_message(struct WingModuleConfig* config, CAN_HandleTypeDef* can);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -90,7 +89,8 @@ void can_process_control_message(struct WingModuleConfig* config, CAN_HandleType
 #define SERVO_PWM_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+#define LED_RED_CHANNEL 1
+#define LED_WHITE_CHANNEL 2
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

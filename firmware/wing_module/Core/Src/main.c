@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "ads131m03.h"
+#include "led_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -244,6 +245,20 @@ int main(void)
 	};
 	ads_begin(ads_config);
 
+	struct LEDControl led = {
+		.error_light_on = config.configuration_needed != 0,
+		.heart_beat_max_duty = UINT16_MAX,
+		.heart_beat_min_duty = 0,
+		.new_pulse_data = true,
+		.pulse_count = 3, // Run some flashes to start
+		.pulse_period_on_ms = 1000,
+		.pulse_period_off_ms = 300,
+
+		.error_timer = &htim2,
+		.error_channel = LED_RED_CHANNEL,
+		.status_timer = &htim2,
+		.status_channel = LED_WHITE_CHANNEL,
+	};
 
   /* USER CODE END 2 */
 
@@ -259,7 +274,7 @@ int main(void)
 			tick_mark_broadcast_ms = CURRENT_TICK + config.general.update_period_ms;
 
 			if (config.general.measuring_strain || config.general.measuring_torsion) {
-				struct WingStrainGaugeBroadcast msg = {
+				struct WingLoadBroadcast msg = {
 					.strain_reading = 0,
 					.torsion_reading = 0,
 				};
@@ -269,8 +284,8 @@ int main(void)
 				printf("T: %11d\tS: %11d\n", (int)msg.torsion_reading, (int)msg.strain_reading);
 
 				CAN_TxHeaderTypeDef strain_gauge_header = {
-					.StdId = CAN_BROADCAST_STRAIN_ID_BASE | config.node_id,
-					.DLC = sizeof(struct WingStrainGaugeBroadcast),
+					.StdId = CAN_BROADCAST_LOAD_ID_BASE | config.node_id,
+					.DLC = sizeof(struct WingLoadBroadcast),
 					.ExtId = 0,
 					.IDE = CAN_ID_STD,
 					.RTR = CAN_RTR_DATA,
@@ -287,6 +302,32 @@ int main(void)
 			can_process_config_message(&config, &hcan);
 		}
 
+		while (HAL_CAN_GetRxFifoFillLevel(&hcan, CAN_COMMAND_FIFO) > 0) {
+			uint8_t command_buffer[8];
+			CAN_RxHeaderTypeDef command_header;
+
+			HAL_CAN_GetRxMessage(&hcan, CAN_COMMAND_FIFO, &command_header, command_buffer);
+			printf("Received command via filter %ld\n", command_header.FilterMatchIndex);
+
+			switch (command_header.FilterMatchIndex) {
+			case CAN_COMMAND_LIGHT_FILTER_NUMBER:
+				struct WingLightCommand light_command = {0};
+				memcpy(&light_command, command_buffer, sizeof(struct WingLightCommand));
+
+				led.pulse_count = light_command.pulse_count;
+				led.pulse_period_off_ms = light_command.pulse_period_off_ms;
+				led.pulse_period_on_ms = light_command.pulse_period_on_ms;
+				led.heart_beat_max_duty = light_command.heart_beat_max_duty;
+				led.heart_beat_min_duty = light_command.heart_beat_min_duty;
+				led.new_pulse_data = true;
+				break;
+			default:
+				break;
+			}
+		}
+
+		led.error_light_on = config.configuration_needed != 0; // Illuminate error if lacking configuration
+		operate_led(&led);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -517,9 +558,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 0;
+  htim2.Init.Prescaler = 100;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 65535;
+  htim2.Init.Period = 255;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
