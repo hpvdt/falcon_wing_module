@@ -33,13 +33,13 @@ void operate_led(struct LEDControl* led_config) {
 		led_config->new_pulse_data = false;
 
 		next_change_ms = CURRENT_TICK;
-		current_status_led_state = false;
-		led_config->pulse_count++; // Accommodate the immediate decrement that follows
+		current_status_led_state = false; // Start low so the pulses start by turning on
 	}
 
 	if (next_change_ms > CURRENT_TICK) return; // Skip unneeded updates
 
 	if (led_config->pulse_count > 0) { // Check if pulses are needed
+		current_status_led_state = !current_status_led_state;
 		if (current_status_led_state) {
 			current_duty = UINT16_MAX;
 			next_change_ms = CURRENT_TICK + led_config->pulse_period_on_ms;
