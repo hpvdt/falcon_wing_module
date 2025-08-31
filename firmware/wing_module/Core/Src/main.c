@@ -28,6 +28,7 @@
 #include <string.h>
 #include "ads131m03.h"
 #include "led_control.h"
+#include "surface_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,6 +91,7 @@ static void MX_I2C1_Init(void);
 void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeDef* can) {
 	int messages = HAL_CAN_GetRxFifoFillLevel(can, CAN_CONFIG_FIFO);
 
+
 	for (int i = 0; i < messages; i++) {
 		CAN_RxHeaderTypeDef header;
 		uint8_t buffer[8];
@@ -148,10 +150,28 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 			if (config->general.measuring_strain) config->configuration_needed |= 1 << CONFIG_MESSAGE_STRAIN;
 			if (config->general.operating_indicator) config->configuration_needed |= 1 << CONFIG_MESSAGE_INDICATOR;
 			if (config->general.measure_lidar) config->configuration_needed |= 1 << CONFIG_MESSAGE_LIDAR;
+			surface_stop(); // Stop driving surface
 
 			can_update_filters(config, can);
 			break;
 		case CONFIG_MESSAGE_SERVO:
+			struct SurfaceConfiguration servo_config = {
+				.misalignment_alarm_sec = config->servo.misalignment_alarm_sec,
+				.position_tolerance = config->servo.position_tolerance_half_percent * 0.005,
+
+				.pot_adc = &hadc1,
+				.potentiometer_bottom = config->servo.potentiometer_bottom,
+				.potentiometer_top = config->servo.potentiometer_top,
+
+				.scheme = config->servo.scheme,
+
+				.servo_bottom_us = config->servo.servo_bottom,
+				.servo_top_us = config->servo.servo_top,
+				.servo_timer = &htim3,
+				.servo_timer_channel = TIM_CHANNEL_2,
+			};
+
+			surface_start(servo_config);
 			break;
 		case CONFIG_MESSAGE_TORSION:
 			struct ADSChannelProcessingConfig temp_torsion = {
@@ -287,7 +307,7 @@ int main(void)
 				if (config.general.measuring_strain) msg.strain_reading = ads_read_channel(ADS_CHANNEL_STRAIN);
 				if (config.general.measuring_torsion) msg.torsion_reading = ads_read_channel(ADS_CHANNEL_TORSION);
 
-				printf("T: %11d\tS: %11d\n", (int)msg.torsion_reading, (int)msg.strain_reading);
+				printf("T: %.3f\tS: %.3f\n\r", msg.torsion_reading, msg.strain_reading);
 
 				CAN_TxHeaderTypeDef strain_gauge_header = {
 					.StdId = CAN_BROADCAST_LOAD_ID_BASE | config.node_id,
@@ -299,7 +319,30 @@ int main(void)
 				};
 				uint32_t mailbox;
 				if (HAL_CAN_AddTxMessage(&hcan, &strain_gauge_header, (uint8_t*) &msg, &mailbox) == HAL_OK) {
-					printf("SENT STRAIN READINGS OVER CAN\n");
+					printf("SENT STRAIN READINGS OVER CAN\n\r");
+				}
+			}
+
+			if (config.general.driving_servo) {
+				struct SurfaceBroadcast msg = {
+					.reading = 0,
+					.surface_not_following = false,
+				};
+				surface_prepare_broadcast(&msg);
+
+				printf("Angle: %.3f\tAlarm: %d\n\r", msg.reading, msg.surface_not_following);
+
+				CAN_TxHeaderTypeDef angle_header = {
+					.StdId = CAN_BROADCAST_ANGLE_ID_BASE | config.servo.surface,
+					.DLC = sizeof(struct SurfaceBroadcast),
+					.ExtId = 0,
+					.IDE = CAN_ID_STD,
+					.RTR = CAN_RTR_DATA,
+					.TransmitGlobalTime = DISABLE,
+				};
+				uint32_t mailbox;
+				if (HAL_CAN_AddTxMessage(&hcan, &angle_header, (uint8_t*) &msg, &mailbox) == HAL_OK) {
+					printf("SENT ANGLE OVER CAN\n\r");
 				}
 			}
 		}
@@ -326,6 +369,12 @@ int main(void)
 				led.heart_beat_max_duty = light_command.heart_beat_max_duty;
 				led.heart_beat_min_duty = light_command.heart_beat_min_duty;
 				led.new_pulse_data = true;
+				break;
+			case CAN_COMMAND_ANGLE_FILTER_BANK:
+				struct SurfaceCommand angle_command = {0};
+				memcpy(&angle_command, command_buffer, sizeof(struct SurfaceCommand));
+
+				surface_update_command(angle_command);
 				break;
 			default:
 				break;
@@ -469,7 +518,6 @@ static void MX_CAN_Init(void)
   }
   /* USER CODE BEGIN CAN_Init 2 */
 
-  HAL_CAN_RxFifo0MsgPendingCallback(&hcan);
   /* USER CODE END CAN_Init 2 */
 
 }
@@ -632,7 +680,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 63;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 50000;
+  htim3.Init.Period = 49999;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -663,7 +711,7 @@ static void MX_TIM3_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM3_Init 2 */
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+
   /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
 

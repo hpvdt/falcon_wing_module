@@ -30,9 +30,15 @@ enum ControlSurface {
 	CONTROL_SURFACE_RUDDER = 3,
 };
 
+enum ControlScheme {
+	CONTROL_SCHEME_OPEN = 0,
+	CONTROL_SCHEME_BANG_BANG = 1,
+};
+
 struct WingModuleServoConfig {
 	enum ControlSurface surface : 2;
-	uint8_t misalignment_alarm_sec : 6; // Time to tolerate an out of tolerance location
+	enum ControlScheme scheme : 2;
+	uint8_t misalignment_alarm_sec : 4; // Time to tolerate an out of tolerance location
 	uint16_t potentiometer_top : 12;
 	uint16_t potentiometer_bottom : 12;
 	uint16_t servo_top : 12;
