@@ -46,7 +46,7 @@ static struct ADSGainRegister _ads_gain = {
 
 volatile static int32_t current_reading[3] = {0,0,0};
 
-static struct CyclicalBuffer {
+struct CyclicalBuffer {
 	int32_t samples[256];
 	int32_t sum; // Must be updated with each sample
 	uint_fast8_t current_index;

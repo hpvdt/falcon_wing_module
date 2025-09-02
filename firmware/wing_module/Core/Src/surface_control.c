@@ -99,7 +99,6 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
 }
 
 void surface_control_loop() {
-	float current_angle = surface_read_angle(); // Read once at the start since it won't physically change quick enough
 
 	switch (surface_config.scheme) {
 	case CONTROL_SCHEME_BANG_BANG:
@@ -112,6 +111,12 @@ void surface_control_loop() {
 		break;
 	}
 
+	if (surface_config.misalignment_alarm_sec == 0) {
+		surface_unaligned = false;
+		return;
+	}
+
+	float current_angle = surface_read_angle(); // Read once since it won't physically change quick enough
 	float delta = fabs(current_command.target - current_angle);
 	bool in_position = delta < surface_config.position_tolerance;
 
