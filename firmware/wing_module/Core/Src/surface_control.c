@@ -62,8 +62,25 @@ static HAL_StatusTypeDef surface_set_surface(uint16_t duty_us) {
 	return (HAL_TIM_PWM_ConfigChannel(surface_config.servo_timer, &temp_oc_config, surface_config.servo_timer_channel));
 }
 
-void surface_update_command(struct SurfaceCommand command) {
-	current_command.target = command.target;
+void surface_update_command(struct CANSurfaceCommand command) {
+	current_command.target = 0;
+
+	switch (surface_config.surface) {
+	case CONTROL_SURFACE_ELEVATOR:
+		current_command.target = command.elevator_angle_thousandths;
+		break;
+	case CONTROL_SURFACE_RUDDER:
+		current_command.target = command.rudder_angle_thousandths;
+		break;
+	case CONTROL_SURFACE_PORT:
+		current_command.target = command.port_angle_thousandths;
+		break;
+	case CONTROL_SURFACE_STARBOARD:
+		current_command.target = command.starboard_angle_thousandths;
+		break;
+	}
+
+	current_command.target = current_command.target / 1000.0;
 }
 
 void surface_stop() {
@@ -89,8 +106,8 @@ void surface_start(struct SurfaceConfiguration surf_config) {
 }
 
 
-void surface_prepare_broadcast(struct SurfaceBroadcast* destination) {
-	destination->reading = surface_read_angle();
+void surface_prepare_broadcast(struct CANSurfaceBroadcast* destination) {
+	destination->reading_thousandths = surface_read_angle() * 1000;
 	destination->surface_not_following = surface_unaligned;
 }
 

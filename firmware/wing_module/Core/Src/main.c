@@ -99,62 +99,58 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 
 		unsigned int config_type = (header.StdId >> 5) & 0x7;
 
-		void* destination = NULL;
+		uint8_t reference_buffer[8];
 		size_t length_to_consider = 0;
 
 		switch (config_type) {
 		case CONFIG_MESSAGE_GENERAL:
-			destination = &config->general;
-			length_to_consider = sizeof(struct WingModuleGeneralConfig);
+			length_to_consider = can_pack_node_general_config_command(reference_buffer, config->general);
 			break;
 		case CONFIG_MESSAGE_SERVO:
-			destination = &config->servo;
-			length_to_consider = sizeof(struct WingModuleServoConfig);
+			length_to_consider = can_pack_servo_config_command(reference_buffer, config->servo);
 			break;
 		case CONFIG_MESSAGE_TORSION:
-			destination = &config->torsion;
-			length_to_consider = sizeof(struct WingModuleStrainGaugeConfig);
+			length_to_consider = can_pack_strain_gauge_config_command(reference_buffer, config->torsion);
 			break;
 		case CONFIG_MESSAGE_STRAIN:
-			destination = &config->strain;
-			length_to_consider = sizeof(struct WingModuleStrainGaugeConfig);
+			length_to_consider = can_pack_strain_gauge_config_command(reference_buffer, config->strain);
 			break;
 		case CONFIG_MESSAGE_INDICATOR:
-			destination = &config->indicator;
-			length_to_consider = sizeof(struct WingModuleIndicatorConfig);
+			length_to_consider = can_pack_indicator_config_command(reference_buffer, config->indicator);
 			break;
 		case CONFIG_MESSAGE_LIDAR:
-			destination = &config->lidar;
-			length_to_consider = sizeof(struct WingModuleLidarConfig);
+			length_to_consider = can_pack_lidar_config_command(reference_buffer, config->lidar);
 			break;
 		default:
 			continue; // Ignore unrecognized messages
 		}
 
-		// Check if it is new compared to the previous data, since some need adjustment procedures
-		bool matches_old = memcmp(destination, buffer, length_to_consider) == 0;
-		if (matches_old && !(config->configuration_needed & (1 << config_type))) continue;
+		bool matches_old = memcmp(reference_buffer, buffer, length_to_consider) == 0;
+		bool need_this_config = (config->configuration_needed & (1 << config_type)) != 0;
+		if (matches_old && !need_this_config) continue; // Skip updates if unnecessary repetition
 
 		// Mask out the received configuration
 		config->configuration_needed &= ~(1 << config_type);
 
-		memcpy(destination, buffer, length_to_consider);
-
 		// Need to update CAN filters if the configuration changes
 		switch (config_type) {
 		case CONFIG_MESSAGE_GENERAL:
+			can_unpack_node_general_config_command(buffer, &config->general);
+
 			// Reset configuration
 			config->configuration_needed = 0;
-			if (config->general.driving_servo) config->configuration_needed |= 1 << CONFIG_MESSAGE_SERVO;
-			if (config->general.measuring_torsion) config->configuration_needed |= 1 << CONFIG_MESSAGE_TORSION;
-			if (config->general.measuring_strain) config->configuration_needed |= 1 << CONFIG_MESSAGE_STRAIN;
-			if (config->general.operating_indicator) config->configuration_needed |= 1 << CONFIG_MESSAGE_INDICATOR;
-			if (config->general.measure_lidar) config->configuration_needed |= 1 << CONFIG_MESSAGE_LIDAR;
+			if (config->general.driving_servo) 			config->configuration_needed |= 1 << CONFIG_MESSAGE_SERVO;
+			if (config->general.measuring_torsion) 		config->configuration_needed |= 1 << CONFIG_MESSAGE_TORSION;
+			if (config->general.measuring_strain) 		config->configuration_needed |= 1 << CONFIG_MESSAGE_STRAIN;
+			if (config->general.operating_indicator) 	config->configuration_needed |= 1 << CONFIG_MESSAGE_INDICATOR;
+			if (config->general.measuring_lidar) 		config->configuration_needed |= 1 << CONFIG_MESSAGE_LIDAR;
 			surface_stop(); // Stop driving surface
 
-			can_update_filters(config, can);
+			can_update_node_filters(config, can);
 			break;
 		case CONFIG_MESSAGE_SERVO:
+			can_unpack_servo_config_command(buffer, &config->servo);
+
 			struct SurfaceConfiguration servo_config = {
 				.misalignment_alarm_sec = config->servo.misalignment_alarm_sec,
 				.position_tolerance = config->servo.position_tolerance_half_percent * 0.005,
@@ -165,8 +161,8 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 
 				.scheme = config->servo.scheme,
 
-				.servo_bottom_us = config->servo.servo_bottom,
-				.servo_top_us = config->servo.servo_top,
+				.servo_bottom_us = config->servo.servo_bottom_us,
+				.servo_top_us = config->servo.servo_top_us,
 				.servo_timer = &htim3,
 				.servo_timer_channel = TIM_CHANNEL_2,
 			};
@@ -174,6 +170,8 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 			surface_start(servo_config);
 			break;
 		case CONFIG_MESSAGE_TORSION:
+			can_unpack_strain_gauge_config_command(buffer, &config->torsion);
+
 			struct ADSChannelProcessingConfig temp_torsion = {
 				.buffer_length = 64 * (config->torsion.buffer_depth_64_samples + 1),
 				.gain = config->torsion.gain,
@@ -185,6 +183,8 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 			ads_configure_channel(ADS_CHANNEL_TORSION, temp_torsion);
 			break;
 		case CONFIG_MESSAGE_STRAIN:
+			can_unpack_strain_gauge_config_command(buffer, &config->strain);
+
 			struct ADSChannelProcessingConfig temp_strain = {
 				.buffer_length = 64 * (config->strain.buffer_depth_64_samples + 1),
 				.gain = config->strain.gain,
@@ -193,11 +193,13 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 				.scaling_factor = config->strain.scaling_factor,
 			};
 
-			ads_configure_channel(ADS_CHANNEL_STRAIN,temp_strain);
+			ads_configure_channel(ADS_CHANNEL_STRAIN, temp_strain);
 			break;
 		case CONFIG_MESSAGE_INDICATOR:
+			can_unpack_indicator_config_command(buffer, &config->indicator);
 			break;
 		case CONFIG_MESSAGE_LIDAR:
+			can_unpack_lidar_config_command(buffer, &config->lidar);
 			break;
 		}
 	}
@@ -258,7 +260,7 @@ int main(void)
 	config.configuration_needed = (1 << CONFIG_MESSAGE_GENERAL); // Mark need for main configuration
 	// Perhaps in the future we can read in previous configuration from flash here
 
-	can_update_filters(&config, &hcan);
+	can_update_node_filters(&config, &hcan);
 
 	struct ADSConfig ads_config = {
 		.bus = &hspi1,
@@ -298,50 +300,53 @@ int main(void)
 		static uint32_t tick_mark_broadcast_ms = 0;
 		if (CURRENT_TICK > tick_mark_broadcast_ms) {
 			tick_mark_broadcast_ms = CURRENT_TICK + config.general.update_period_ms;
+			uint8_t tx_buffer[8];
 
 			if (config.general.measuring_strain || config.general.measuring_torsion) {
-				struct WingLoadBroadcast msg = {
+				struct CANLoadBroadcast msg = {
 					.strain_reading = 0,
 					.torsion_reading = 0,
 				};
 				if (config.general.measuring_strain) msg.strain_reading = ads_read_channel(ADS_CHANNEL_STRAIN);
 				if (config.general.measuring_torsion) msg.torsion_reading = ads_read_channel(ADS_CHANNEL_TORSION);
+				can_pack_load_broadcast(tx_buffer, msg);
 
 				printf("T: %.3f\tS: %.3f\n\r", msg.torsion_reading, msg.strain_reading);
 
 				CAN_TxHeaderTypeDef strain_gauge_header = {
 					.StdId = CAN_BROADCAST_LOAD_ID_BASE | config.node_id,
-					.DLC = sizeof(struct WingLoadBroadcast),
+					.DLC = sizeof(struct CANLoadBroadcast),
 					.ExtId = 0,
 					.IDE = CAN_ID_STD,
 					.RTR = CAN_RTR_DATA,
 					.TransmitGlobalTime = DISABLE,
 				};
 				uint32_t mailbox;
-				if (HAL_CAN_AddTxMessage(&hcan, &strain_gauge_header, (uint8_t*) &msg, &mailbox) == HAL_OK) {
+				if (HAL_CAN_AddTxMessage(&hcan, &strain_gauge_header, tx_buffer, &mailbox) == HAL_OK) {
 					printf("SENT STRAIN READINGS OVER CAN\n\r");
 				}
 			}
 
 			if (config.general.driving_servo) {
-				struct SurfaceBroadcast msg = {
-					.reading = 0,
+				struct CANSurfaceBroadcast msg = {
+					.reading_thousandths = 0,
 					.surface_not_following = false,
 				};
 				surface_prepare_broadcast(&msg);
+				can_pack_surface_broadcast(tx_buffer, msg);
 
-				printf("Angle: %.3f\tAlarm: %d\n\r", msg.reading, msg.surface_not_following);
+				printf("Angle: %.3f\tAlarm: %d\n\r", msg.reading_thousandths / 1000.0, msg.surface_not_following);
 
 				CAN_TxHeaderTypeDef angle_header = {
-					.StdId = CAN_BROADCAST_ANGLE_ID_BASE | config.servo.surface,
-					.DLC = sizeof(struct SurfaceBroadcast),
+					.StdId = CAN_BROADCAST_ANGLE_ID | config.servo.surface,
+					.DLC = sizeof(struct CANSurfaceBroadcast),
 					.ExtId = 0,
 					.IDE = CAN_ID_STD,
 					.RTR = CAN_RTR_DATA,
 					.TransmitGlobalTime = DISABLE,
 				};
 				uint32_t mailbox;
-				if (HAL_CAN_AddTxMessage(&hcan, &angle_header, (uint8_t*) &msg, &mailbox) == HAL_OK) {
+				if (HAL_CAN_AddTxMessage(&hcan, &angle_header, tx_buffer, &mailbox) == HAL_OK) {
 					printf("SENT ANGLE OVER CAN\n\r");
 				}
 			}
@@ -360,8 +365,8 @@ int main(void)
 
 			switch (command_header.FilterMatchIndex) {
 			case CAN_COMMAND_LIGHT_FILTER_NUMBER:
-				struct WingLightCommand light_command = {0};
-				memcpy(&light_command, command_buffer, sizeof(struct WingLightCommand));
+				struct CANLightCommand light_command = {0};
+				can_unpack_light_command(command_buffer, &light_command);
 
 				led.pulse_count = light_command.pulse_count;
 				led.pulse_period_off_ms = light_command.pulse_period_off_ms;
@@ -371,10 +376,10 @@ int main(void)
 				led.new_pulse_data = true;
 				break;
 			case CAN_COMMAND_ANGLE_FILTER_BANK:
-				struct SurfaceCommand angle_command = {0};
-				memcpy(&angle_command, command_buffer, sizeof(struct SurfaceCommand));
+				struct CANSurfaceCommand surface_command;
+				can_unpack_surface_command(command_buffer, &surface_command);
 
-				surface_update_command(angle_command);
+				surface_update_command(surface_command);
 				break;
 			default:
 				break;

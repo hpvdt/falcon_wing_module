@@ -18,6 +18,7 @@
 #include "stm32f1xx_hal_tim.h"
 
 struct SurfaceConfiguration {
+	enum ControlSurface surface;
 	enum ControlScheme scheme;
 	uint8_t misalignment_alarm_sec; // Time to tolerate an out of tolerance location
 	uint16_t potentiometer_top;
@@ -37,21 +38,17 @@ struct SurfaceConfiguration {
 };
 
 struct SurfaceCommand {
-	float target; // Value between -1 and 1 inclusive to aim for
+	float target;
 };
 
-struct SurfaceBroadcast {
-	float reading; // Value between -1 and 1 inclusive representing surface reading
-	bool surface_not_following : 1;
-};
 
 void surface_start(struct SurfaceConfiguration surf_config);
 void surface_stop();
 
 void surface_control_loop();
 
-void surface_update_command(struct SurfaceCommand command);
+void surface_update_command(struct CANSurfaceCommand command);
 
-void surface_prepare_broadcast(struct SurfaceBroadcast* destination);
+void surface_prepare_broadcast(struct CANSurfaceBroadcast* destination);
 
 #endif /* INC_SURFACE_CONTROL_H_ */
