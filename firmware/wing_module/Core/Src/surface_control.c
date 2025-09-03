@@ -33,7 +33,7 @@ static volatile struct SurfaceCommand current_command = {
 
 
 static float surface_read_angle() {
-	uint16_t reading = HAL_ADC_GetValue(surface_config.pot_adc);
+	int16_t reading = HAL_ADC_GetValue(surface_config.pot_adc);
 
 	reading = reading - surface_config.potentiometer_zero;
 	float normalized_result = (float)reading / (float)surface_config.potentiometer_half_range;
