@@ -364,7 +364,7 @@ float ads_read_channel(enum ADSChannel channel) {
 	}
 
 	int32_t temp = buffer_of_interest->sum;
-	temp = temp / buffer_of_interest->buffer_length;
+	temp = temp / (int32_t) buffer_of_interest->buffer_length;
 	temp = temp - buffer_of_interest->zero_point;
 
 	return (buffer_of_interest->scale * (float)temp);
