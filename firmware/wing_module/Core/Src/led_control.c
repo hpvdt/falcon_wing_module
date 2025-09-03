@@ -5,14 +5,14 @@
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_tim.h"
 
-static const uint16_t ERROR_ON_DUTY = UINT16_MAX;
-static const uint16_t ERROR_OFF_DUTY = 0;
-static const uint16_t HEARTBEAT_DUTY_INCREMENT = 10;
-static const uint16_t HEARTBEAT_INCREMENT_PERIOD_MS = 5;
+static const uint8_t ERROR_ON_DUTY = UINT8_MAX;
+static const uint8_t ERROR_OFF_DUTY = 0;
+static const uint8_t HEARTBEAT_DUTY_INCREMENT = 3;
+static const uint8_t HEARTBEAT_INCREMENT_PERIOD_MS = 10;
 
 void operate_led(struct LEDControl* led_config) {
 	// Error light is always just binary
-	uint16_t error_duty = ERROR_ON_DUTY;
+	uint8_t error_duty = ERROR_ON_DUTY;
 	if (!led_config->error_light_on) error_duty = ERROR_OFF_DUTY;
 
 	TIM_OC_InitTypeDef pwm_config = {0};
@@ -24,8 +24,8 @@ void operate_led(struct LEDControl* led_config) {
 	HAL_TIM_PWM_ConfigChannel(led_config->error_timer, &pwm_config, led_config->error_channel);
 
 	static uint32_t next_change_ms = 0;
-	static int32_t current_duty = 0; // Slightly over sized to catch underflows on uint16_t
-	static int16_t duty_increment = HEARTBEAT_DUTY_INCREMENT;
+	static int16_t current_duty = 0; // Slightly over sized to catch underflows on uint16_t
+	static int8_t duty_increment = HEARTBEAT_DUTY_INCREMENT;
 	static bool current_status_led_state = false;
 	const uint32_t CURRENT_TICK = HAL_GetTick();
 

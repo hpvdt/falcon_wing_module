@@ -14,8 +14,8 @@ struct LEDControl {
 	uint16_t pulse_period_on_ms;
 	uint16_t pulse_period_off_ms;
 
-	uint16_t heart_beat_max_duty;
-	uint16_t heart_beat_min_duty;
+	uint8_t heart_beat_max_duty;
+	uint8_t heart_beat_min_duty;
 
 	TIM_HandleTypeDef* error_timer;
 	uint32_t error_channel;

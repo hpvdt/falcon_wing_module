@@ -275,7 +275,7 @@ int main(void)
 
 	struct LEDControl led = {
 		.error_light_on = config.configuration_needed != 0,
-		.heart_beat_max_duty = UINT16_MAX,
+		.heart_beat_max_duty = UINT8_MAX,
 		.heart_beat_min_duty = 0,
 		.new_pulse_data = true,
 		.pulse_count = 3, // Run some flashes to start
@@ -619,7 +619,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 100;
+  htim2.Init.Prescaler = 0;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 255;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -644,7 +644,7 @@ static void MX_TIM2_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
+  sConfigOC.Pulse = 127;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
   if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
