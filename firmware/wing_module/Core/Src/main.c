@@ -255,7 +255,7 @@ int main(void)
 	if (HAL_GPIO_ReadPin(ADDR_2_GPIO_Port, ADDR_2_Pin) == ADDRESS_ACTIVE) config.node_id += 4;
 	if (HAL_GPIO_ReadPin(ADDR_3_GPIO_Port, ADDR_3_Pin) == ADDRESS_ACTIVE) config.node_id += 8;
 	if (HAL_GPIO_ReadPin(ADDR_4_GPIO_Port, ADDR_4_Pin) == ADDRESS_ACTIVE) config.node_id += 16;
-	printf("Recorded node ID as %d\n", config.node_id);
+	printf("Recorded node ID as %d\r\n", config.node_id);
 
 	config.configuration_needed = (1 << CONFIG_MESSAGE_GENERAL); // Mark need for main configuration
 	// Perhaps in the future we can read in previous configuration from flash here
@@ -311,7 +311,7 @@ int main(void)
 				if (config.general.measuring_torsion) msg.torsion_reading = ads_read_channel(ADS_CHANNEL_TORSION);
 				can_pack_load_broadcast(tx_buffer, msg);
 
-				printf("T: %.3f\tS: %.3f\n\r", msg.torsion_reading, msg.strain_reading);
+				printf("T: %.3f\tS: %.3f\r\n", msg.torsion_reading, msg.strain_reading);
 
 				CAN_TxHeaderTypeDef strain_gauge_header = {
 					.StdId = CAN_BROADCAST_LOAD_ID_BASE | config.node_id,
@@ -323,7 +323,7 @@ int main(void)
 				};
 				uint32_t mailbox;
 				if (HAL_CAN_AddTxMessage(&hcan, &strain_gauge_header, tx_buffer, &mailbox) == HAL_OK) {
-					printf("SENT STRAIN READINGS OVER CAN\n\r");
+					printf("SENT STRAIN READINGS OVER CAN\r\n");
 				}
 			}
 
@@ -335,7 +335,7 @@ int main(void)
 				surface_prepare_broadcast(&msg);
 				can_pack_surface_broadcast(tx_buffer, msg);
 
-				printf("Angle: %.3f\tAlarm: %d\n\r", msg.reading_thousandths / 1000.0, msg.surface_not_following);
+				printf("Angle: %.3f\tAlarm: %d\r\n", msg.reading_thousandths / 1000.0, msg.surface_not_following);
 
 				CAN_TxHeaderTypeDef angle_header = {
 					.StdId = CAN_BROADCAST_ANGLE_ID | config.servo.surface,
@@ -347,7 +347,7 @@ int main(void)
 				};
 				uint32_t mailbox;
 				if (HAL_CAN_AddTxMessage(&hcan, &angle_header, tx_buffer, &mailbox) == HAL_OK) {
-					printf("SENT ANGLE OVER CAN\n\r");
+					printf("SENT ANGLE OVER CAN\r\n");
 				}
 			}
 		}
@@ -361,7 +361,7 @@ int main(void)
 			CAN_RxHeaderTypeDef command_header;
 
 			HAL_CAN_GetRxMessage(&hcan, CAN_COMMAND_FIFO, &command_header, command_buffer);
-			printf("Received command via filter %ld\n", command_header.FilterMatchIndex);
+			printf("Received command via filter %ld\r\n", command_header.FilterMatchIndex);
 
 			switch (command_header.FilterMatchIndex) {
 			case CAN_COMMAND_LIGHT_FILTER_NUMBER:
