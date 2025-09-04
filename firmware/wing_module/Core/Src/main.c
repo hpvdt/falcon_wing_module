@@ -296,6 +296,7 @@ int main(void)
 		const uint32_t CURRENT_TICK = HAL_GetTick();
 
 		ads_update_channels();
+		surface_control_loop();
 
 		static uint32_t tick_mark_broadcast_ms = 0;
 		if (CURRENT_TICK > tick_mark_broadcast_ms) {
@@ -387,6 +388,7 @@ int main(void)
 		}
 
 		led.error_light_on = config.configuration_needed != 0; // Illuminate error if lacking configuration
+		// TODO: Add error lighting if the servo is failing to hit the commands?
 		operate_led(&led);
     /* USER CODE END WHILE */
 

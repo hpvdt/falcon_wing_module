@@ -14,6 +14,8 @@
 
 #include "surface_control.h"
 
+static const uint32_t CONTROL_PERIOD_MS = 20; // Approximate period of the servo PWM
+
 static volatile bool surface_unaligned = false;
 static volatile struct SurfaceConfiguration surface_config = {
 	.misalignment_alarm_sec = 5,
@@ -100,9 +102,6 @@ void surface_start(struct SurfaceConfiguration surf_config) {
 	surface_config.servo_us_zero = surface_config.servo_bottom_us + surface_config.servo_us_half_range;
 	surface_config.potentiometer_half_range = (surface_config.potentiometer_top - surface_config.potentiometer_bottom) / 2;
 	surface_config.potentiometer_zero = surface_config.potentiometer_bottom + surface_config.potentiometer_half_range;
-
-	// TODO: Start PWM and attach control loop interrupt?
-	HAL_TIM_PWM_Start(surface_config.servo_timer, surface_config.servo_timer_channel);
 }
 
 
@@ -111,11 +110,11 @@ void surface_prepare_broadcast(struct CANSurfaceBroadcast* destination) {
 	destination->surface_not_following = surface_unaligned;
 }
 
-void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
-	if (htim == surface_config.servo_timer) surface_control_loop();
-}
-
 void surface_control_loop() {
+	static uint32_t next_control_check_ms = 0;
+	uint32_t CURRENT_TICK_MS = HAL_GetTick();
+	if (CURRENT_TICK_MS < next_control_check_ms) return;
+	next_control_check_ms = CURRENT_TICK_MS + CONTROL_PERIOD_MS;
 
 	switch (surface_config.scheme) {
 	case CONTROL_SCHEME_BANG_BANG:
