@@ -2669,6 +2669,28 @@
 			(embedded_fonts no)
 		)
 	)
+	(text_box "Enabling the I^{2}C causes the CH2 output of TIM3 used for the servo to no longer control the pin. For this reason, I^{2}C should be disabled on boards destined to drive servos, and dedicated I^{2}C modules should be installed where needed.\n\nSeems to be related to two possible alternate functions contesting for PB5, TIM3_CH2 and SMBA from I2C1 - with the I^{2}C peripheral winning. Apparently ST has a history of botching I^{2}C.\n\nFuture revisions should swap the servo PWM and ADD2 pins."
+		(exclude_from_sim no)
+		(at 21.59 92.71 0)
+		(size 48.26 31.75)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+			)
+			(justify left top)
+		)
+		(uuid "6fa9a327-203a-46b7-bfcc-01d057c14cc0")
+	)
 	(junction
 		(at 246.38 138.43)
 		(diameter 0)

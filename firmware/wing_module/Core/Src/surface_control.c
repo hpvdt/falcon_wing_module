@@ -102,6 +102,8 @@ void surface_start(struct SurfaceConfiguration surf_config) {
 	surface_config.servo_us_zero = surface_config.servo_bottom_us + surface_config.servo_us_half_range;
 	surface_config.potentiometer_half_range = (surface_config.potentiometer_top - surface_config.potentiometer_bottom) / 2;
 	surface_config.potentiometer_zero = surface_config.potentiometer_bottom + surface_config.potentiometer_half_range;
+
+	HAL_TIM_PWM_Start(surface_config.servo_timer, surface_config.servo_timer_channel);
 }
 
 

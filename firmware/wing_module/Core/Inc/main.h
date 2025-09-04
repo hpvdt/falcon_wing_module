@@ -91,6 +91,7 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 /* USER CODE BEGIN Private defines */
 #define LED_RED_CHANNEL TIM_CHANNEL_1
 #define LED_WHITE_CHANNEL TIM_CHANNEL_2
+#define SERVO_CHANNEL TIM_CHANNEL_2
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

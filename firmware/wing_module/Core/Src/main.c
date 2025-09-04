@@ -51,8 +51,6 @@ ADC_HandleTypeDef hadc1;
 
 CAN_HandleTypeDef hcan;
 
-I2C_HandleTypeDef hi2c1;
-
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim2;
@@ -73,7 +71,6 @@ static void MX_TIM2_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM3_Init(void);
-static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 #ifdef __GNUC__
 /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
@@ -245,8 +242,9 @@ int main(void)
   MX_USART1_UART_Init();
   MX_ADC1_Init();
   MX_TIM3_Init();
-  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+
+   	// NOTE: for some reason starting I2C causes issues on the channel 2 of timer 3, so it may need to be disabled for servo destined modules
 
 	config.node_id = 0;
 	const bool ADDRESS_ACTIVE = true;
@@ -288,6 +286,24 @@ int main(void)
 		.status_channel = LED_WHITE_CHANNEL,
 	};
 
+
+	struct SurfaceConfiguration servo_config = {
+		.misalignment_alarm_sec = 5,
+		.position_tolerance = 0.1,
+
+		.pot_adc = &hadc1,
+		.potentiometer_bottom = 0,
+		.potentiometer_top = 4095,
+
+		.scheme = CONTROL_SCHEME_OPEN,
+
+		.servo_bottom_us = 1500,
+		.servo_top_us = 2500,
+		.servo_timer = &htim3,
+		.servo_timer_channel = SERVO_CHANNEL,
+	};
+
+	surface_start(servo_config);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -300,7 +316,15 @@ int main(void)
 
 		static uint32_t tick_mark_broadcast_ms = 0;
 		if (CURRENT_TICK > tick_mark_broadcast_ms) {
-			tick_mark_broadcast_ms = CURRENT_TICK + config.general.update_period_ms;
+			struct CANSurfaceCommand surface_command_test = {
+				.elevator_angle_thousandths = CURRENT_TICK % 2000 - 1000,
+				.port_angle_thousandths = CURRENT_TICK % 2000 - 1000,
+				.rudder_angle_thousandths = CURRENT_TICK % 2000 - 1000,
+				.starboard_angle_thousandths = CURRENT_TICK % 2000 - 1000,
+			};
+			surface_update_command(surface_command_test);
+
+			tick_mark_broadcast_ms = CURRENT_TICK + config.general.update_period_ms + 100;
 			uint8_t tx_buffer[8];
 
 			if (config.general.measuring_strain || config.general.measuring_torsion) {
@@ -530,40 +554,6 @@ static void MX_CAN_Init(void)
 }
 
 /**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C1_Init(void)
-{
-
-  /* USER CODE BEGIN I2C1_Init 0 */
-
-  /* USER CODE END I2C1_Init 0 */
-
-  /* USER CODE BEGIN I2C1_Init 1 */
-
-  /* USER CODE END I2C1_Init 1 */
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN I2C1_Init 2 */
-
-  /* USER CODE END I2C1_Init 2 */
-
-}
-
-/**
   * @brief SPI1 Initialization Function
   * @param None
   * @retval None
@@ -719,7 +709,6 @@ static void MX_TIM3_Init(void)
   }
   /* USER CODE BEGIN TIM3_Init 2 */
 
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   /* USER CODE END TIM3_Init 2 */
   HAL_TIM_MspPostInit(&htim3);
 
@@ -807,6 +796,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(ADDR_0_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB6 PB7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
