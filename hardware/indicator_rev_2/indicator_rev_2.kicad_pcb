@@ -39,6 +39,50 @@
 		(55 "User.9" user)
 	)
 	(setup
+		(stackup
+			(layer "F.SilkS"
+				(type "Top Silk Screen")
+				(color "White")
+			)
+			(layer "F.Paste"
+				(type "Top Solder Paste")
+			)
+			(layer "F.Mask"
+				(type "Top Solder Mask")
+				(color "Green")
+				(thickness 0.01)
+			)
+			(layer "F.Cu"
+				(type "copper")
+				(thickness 0.035)
+			)
+			(layer "dielectric 1"
+				(type "core")
+				(color "FR4 natural")
+				(thickness 1.51)
+				(material "FR4")
+				(epsilon_r 4.5)
+				(loss_tangent 0.02)
+			)
+			(layer "B.Cu"
+				(type "copper")
+				(thickness 0.035)
+			)
+			(layer "B.Mask"
+				(type "Bottom Solder Mask")
+				(color "Green")
+				(thickness 0.01)
+			)
+			(layer "B.Paste"
+				(type "Bottom Solder Paste")
+			)
+			(layer "B.SilkS"
+				(type "Bottom Silk Screen")
+				(color "White")
+			)
+			(copper_finish "None")
+			(dielectric_constraints no)
+		)
 		(pad_to_mask_clearance 0)
 		(allow_soldermask_bridges_in_footprints no)
 		(tenting front back)
@@ -5903,12 +5947,12 @@
 	(footprint "Symbol:HPVDT-Logo_1526.1x139.6mm_SilkScreen"
 		(layer "B.Cu")
 		(uuid "75ffa8ee-6eb9-4fdb-a0d6-fdbf3b44428d")
-		(at 119 128.917 180)
+		(at 119 126.5 180)
 		(property "Reference" "G***"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "d2e03ca1-f53e-4838-b335-128dca607a32")
+			(uuid "d9638a05-ed36-48fe-922b-f142cfdd379c")
 			(effects
 				(font
 					(size 1.5 1.5)
@@ -5920,7 +5964,7 @@
 			(at 0.015467 0 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "2de4d638-78c8-468b-9ab4-408c133e93c9")
+			(uuid "99d9e232-f163-4c33-860b-6730e4febb1c")
 			(effects
 				(font
 					(size 1.5 1.5)
@@ -5932,7 +5976,7 @@
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "5b2be991-2539-42f8-8ac1-e65e82b0942e")
+			(uuid "83a043ac-950d-40ac-b92a-9ae58ce7ec4d")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5945,7 +5989,7 @@
 			(at 0 0 0)
 			(layer "B.Fab")
 			(hide yes)
-			(uuid "ba107d79-2d90-4ab7-9b8a-8f64296fe013")
+			(uuid "d27bd974-3e30-4881-bc1e-dd4d2380ca0a")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8233,6 +8277,28 @@
 		(layer "F.SilkS")
 		(uuid "b0bf9291-52d3-4bcf-9b66-9c16635d5002")
 	)
+	(gr_rect
+		(start 111.1 129.4)
+		(end 115.1 133.4)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill yes)
+		(layer "B.SilkS")
+		(uuid "34f7021f-1fd0-49ee-a3b6-2de6f6ed9ddc")
+	)
+	(gr_rect
+		(start 110.6 128.9)
+		(end 115.6 133.9)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(fill no)
+		(layer "B.SilkS")
+		(uuid "5cf45706-53da-4c47-a533-98c38f0df73f")
+	)
 	(gr_line
 		(start 153.35 139)
 		(end 105.35 139)
@@ -8415,6 +8481,19 @@
 			(justify left bottom)
 		)
 	)
+	(gr_text "Rev. 2.0"
+		(at 125.9 133.6 0)
+		(layer "B.SilkS")
+		(uuid "3d7b6cdc-e60f-41ca-8174-f0cd1903f144")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
 	(gr_text "CL"
 		(at 145.9 111.2355 90)
 		(layer "B.SilkS")
@@ -8490,7 +8569,7 @@
 		)
 	)
 	(gr_text "Abdullah Alsafar"
-		(at 134.494 126.25 0)
+		(at 128.538154 123.9 0)
 		(layer "B.SilkS")
 		(uuid "cd746cc5-36fc-433d-9559-bc0c8819506b")
 		(effects
@@ -8513,6 +8592,19 @@
 				(bold yes)
 			)
 			(justify left bottom)
+		)
+	)
+	(gr_text "Indicator Board"
+		(at 134.2 130.9 0)
+		(layer "B.SilkS")
+		(uuid "fa01a745-3c0e-4d4c-9ae9-cca895d57d71")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom mirror)
 		)
 	)
 	(dimension
