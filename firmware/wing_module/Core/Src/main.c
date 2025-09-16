@@ -319,14 +319,6 @@ int main(void)
 
 		static uint32_t tick_mark_broadcast_ms = 0;
 		if (CURRENT_TICK > tick_mark_broadcast_ms) {
-			struct CANSurfaceCommand surface_command_test = {
-				.elevator_angle_thousandths = CURRENT_TICK % 2000 - 1000,
-				.port_angle_thousandths = CURRENT_TICK % 2000 - 1000,
-				.rudder_angle_thousandths = CURRENT_TICK % 2000 - 1000,
-				.starboard_angle_thousandths = CURRENT_TICK % 2000 - 1000,
-			};
-			surface_update_command(surface_command_test);
-
 			tick_mark_broadcast_ms = CURRENT_TICK + config.general.update_period_ms;
 			uint8_t tx_buffer[8];
 
