@@ -2,7 +2,6 @@
 #include "stm32f1xx_hal_can.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include <string.h> // For `memcpy()`
 #include "can_wrapper.h"
 #include "wing_module_config.h"
 
@@ -12,6 +11,8 @@ void can_update_node_filters(struct WingModuleConfig* config, CAN_HandleTypeDef*
 
 	uint16_t mask_filter = CAN_CONFIG_MASK;
 	mask_filter = (mask_filter << 5) | CAN_IGNORE_EXTENDED_MASK_HIGH;
+
+	HAL_CAN_Stop(can);
 
 	CAN_FilterTypeDef filter_for_config = {
 		.FilterMode = CAN_FILTERMODE_IDMASK,
@@ -81,4 +82,6 @@ void can_update_node_filters(struct WingModuleConfig* config, CAN_HandleTypeDef*
 	if (config->general.operating_indicator) filter_for_surface_angles.FilterActivation = CAN_FILTER_ENABLE;
 
 	HAL_CAN_ConfigFilter(can, &filter_for_surface_angles);
+
+	HAL_CAN_Start(can);
 }
