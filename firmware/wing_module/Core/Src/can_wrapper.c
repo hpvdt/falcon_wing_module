@@ -314,3 +314,20 @@ void can_unpack_indicator_config_command(uint8_t* source_buffer, struct CANIndic
 	get_unsigned_int(source_buffer, &current_bit, 7, (uint32_t*)&msg->invert_led);
 	get_unsigned_int(source_buffer, &current_bit, 16, (uint32_t*)&msg->buzzer_period_ms);
 }
+
+
+HAL_StatusTypeDef can_send_message(CAN_HandleTypeDef* can, CAN_TxHeaderTypeDef header, uint8_t* payload, uint32_t timeout_ticks) {
+	uint32_t TIMEOUT_TICK = HAL_GetTick() + timeout_ticks;
+	if (timeout_ticks == 0) TIMEOUT_TICK = UINT32_MAX;
+
+	uint32_t current_tick = HAL_GetTick();
+	uint32_t can_tx_available = 0;
+	do {
+		can_tx_available = HAL_CAN_GetTxMailboxesFreeLevel(can);
+	} while (current_tick < TIMEOUT_TICK && can_tx_available == 0);
+
+	if (current_tick >= TIMEOUT_TICK) return HAL_TIMEOUT;
+
+	uint32_t mailbox; // We do not actually care for this
+	return HAL_CAN_AddTxMessage(can, &header, payload, &mailbox);
+}
