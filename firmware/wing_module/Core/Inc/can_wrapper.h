@@ -100,8 +100,8 @@ enum ControlScheme {
 };
 
 struct CANServoConfigCommand {
-	enum ControlSurface surface; // 2 bis
-	enum ControlScheme scheme; // 2 bits
+	uint8_t surface; // 2 bits
+	uint8_t scheme; // 2 bits
 	uint8_t misalignment_alarm_sec ; // 4 bits, Time to tolerate an out of tolerance location (0 to disable)
 	uint16_t potentiometer_top; // 12 bits
 	uint16_t potentiometer_bottom; // 12 bits
