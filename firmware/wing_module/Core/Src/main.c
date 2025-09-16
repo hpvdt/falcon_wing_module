@@ -94,7 +94,7 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 		uint8_t buffer[8];
 		HAL_CAN_GetRxMessage(can, CAN_CONFIG_FIFO, &header, buffer);
 
-		unsigned int config_type = (header.StdId >> 5) & 0x7;
+		unsigned int config_type = (header.StdId >> CAN_CONFIG_BIT_START) & 0x7;
 
 		uint8_t reference_buffer[8];
 		size_t length_to_consider = 0;
@@ -143,7 +143,6 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 			if (config->general.measuring_lidar) 		config->configuration_needed |= 1 << CONFIG_MESSAGE_LIDAR;
 			surface_stop(); // Stop driving surface
 
-			can_update_node_filters(config, can);
 			break;
 		case CONFIG_MESSAGE_SERVO:
 			can_unpack_servo_config_command(buffer, &config->servo);
@@ -199,6 +198,10 @@ void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeD
 			can_unpack_lidar_config_command(buffer, &config->lidar);
 			break;
 		}
+	}
+
+	if (config->configuration_needed == 0) {
+		can_update_node_filters(config, can);
 	}
 }
 
@@ -324,7 +327,7 @@ int main(void)
 			};
 			surface_update_command(surface_command_test);
 
-			tick_mark_broadcast_ms = CURRENT_TICK + config.general.update_period_ms + 100;
+			tick_mark_broadcast_ms = CURRENT_TICK + config.general.update_period_ms;
 			uint8_t tx_buffer[8];
 
 			if (config.general.measuring_strain || config.general.measuring_torsion) {
