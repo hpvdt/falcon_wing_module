@@ -10,15 +10,15 @@
 
 #include <stdint.h>
 
-#include "stm32f1xx_hal.h"
-
 // Mask defines bits that MUST match
-#define CAN_CONFIG_ID_BASE				0x600
+#define CAN_CONFIG_ID_BASE				0x400
 #define CAN_CONFIG_MASK					0x71F
+#define CAN_CONFIG_BIT_START			5
 #define CAN_COMMAND_ANGLE_ID_BASE		0x020
 #define CAN_COMMAND_LIGHT_ID_BASE		0x040
 #define CAN_READING_ANGLE_ID_BASE		0x200
 #define CAN_READING_ANGLE_MASK			0x7FC
+#define CAN_NODE_ADDRESS_MASK			0x7E0
 
 #define CAN_COMMAND_LIGHT_FILTER_BANK 	0
 #define CAN_COMMAND_ANGLE_FILTER_BANK 	1
