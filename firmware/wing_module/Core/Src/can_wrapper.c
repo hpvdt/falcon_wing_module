@@ -13,15 +13,19 @@ static uint8_t bits_to_dlc(uint8_t bits) {
 	return (quotient + 1); // Round up if needed
 }
 
+static void clear_can_buffer(uint8_t* buffer) {
+	for (uint_fast8_t i = 0; i < 8; i++) buffer[i] = 0;
+}
 
 static void get_unsigned_int(uint8_t* buffer, uint8_t* current_bit, uint8_t bit_length, uint32_t* destination) {
 	if (*current_bit >= 64) return;
 
 	uint8_t end_bit = *current_bit + bit_length;
-	uint8_t start_byte = bits_to_dlc(*current_bit);
-	uint8_t end_byte = bits_to_dlc(end_bit - 1);
+	uint8_t start_byte = *current_bit / 8;
+	uint8_t end_byte = (end_bit - 1) / 8;
 
 	uint32_t collected_data = 0;
+	uint_fast8_t bits_collected = 0;
 
 	for (uint_fast8_t i = 0; i <= (end_byte - start_byte); i++) {
 		uint8_t bit_of_interest = *current_bit & 0x7;
@@ -35,9 +39,10 @@ static void get_unsigned_int(uint8_t* buffer, uint8_t* current_bit, uint8_t bit_
 		const uint8_t MASK = 0xFF >> (8 - bits_to_mask_out);
 		temp = temp & MASK;
 
-		collected_data = collected_data | (temp << (8 * i));
+		collected_data = collected_data | (temp << bits_collected);
 
 		bit_length = bit_length - bits_to_mask_out;
+		bits_collected = bits_collected + bits_to_mask_out;
 		*current_bit = *current_bit + bits_to_mask_out;
 	}
 
@@ -74,14 +79,14 @@ static void put_unsigned_int(uint8_t* buffer, uint8_t* current_bit, uint8_t bit_
 	// NOTE: This function assumes that the buffer has been cleared beforehand
 
 	uint8_t end_bit = *current_bit + bit_length;
-	uint8_t start_byte = bits_to_dlc(*current_bit);
-	uint8_t end_byte = bits_to_dlc(end_bit - 1);
+	uint8_t start_byte = *current_bit / 8;
+	uint8_t end_byte = (end_bit - 1) / 8;
 
 	for (uint_fast8_t i = start_byte; i <= end_byte; i++) {
 		uint8_t bit_of_interest = *current_bit & 0x7;
 		uint8_t temp = val & 0xFF;
 
-		const uint_fast8_t BITS_POSSIBLE_TO_WRITE = bit_length;
+		const uint_fast8_t BITS_POSSIBLE_TO_WRITE = 8 - bit_of_interest;
 		uint_fast8_t bits_to_mask_out = bit_length;
 		if (bits_to_mask_out > BITS_POSSIBLE_TO_WRITE) bits_to_mask_out = BITS_POSSIBLE_TO_WRITE;
 
@@ -114,6 +119,8 @@ static void put_float(uint8_t* buffer, uint8_t* current_bit, uint8_t bit_length,
 uint8_t can_pack_light_command(uint8_t* destination_buffer, struct CANLightCommand msg) {
 	uint8_t current_bit = 0;
 
+	clear_can_buffer(destination_buffer);
+
 	put_unsigned_int(destination_buffer, &current_bit, 8, msg.pulse_count);
 	put_unsigned_int(destination_buffer, &current_bit, 8, msg.heart_beat_max_duty);
 	put_unsigned_int(destination_buffer, &current_bit, 8, msg.heart_beat_min_duty);
@@ -126,6 +133,8 @@ uint8_t can_pack_light_command(uint8_t* destination_buffer, struct CANLightComma
 uint8_t can_pack_surface_command(uint8_t* destination_buffer, struct CANSurfaceCommand msg) {
 	uint8_t current_bit = 0;
 
+	clear_can_buffer(destination_buffer);
+
 	put_signed_int(destination_buffer, &current_bit, 16, msg.port_angle_thousandths);
 	put_signed_int(destination_buffer, &current_bit, 16, msg.starboard_angle_thousandths);
 	put_signed_int(destination_buffer, &current_bit, 16, msg.elevator_angle_thousandths);
@@ -137,6 +146,8 @@ uint8_t can_pack_surface_command(uint8_t* destination_buffer, struct CANSurfaceC
 uint8_t can_pack_load_broadcast(uint8_t* destination_buffer, struct CANLoadBroadcast msg) {
 	uint8_t current_bit = 0;
 
+	clear_can_buffer(destination_buffer);
+
 	put_float(destination_buffer, &current_bit, 32, msg.strain_reading);
 	put_float(destination_buffer, &current_bit, 32, msg.torsion_reading);
 
@@ -145,6 +156,8 @@ uint8_t can_pack_load_broadcast(uint8_t* destination_buffer, struct CANLoadBroad
 
 uint8_t can_pack_surface_broadcast(uint8_t* destination_buffer, struct CANSurfaceBroadcast msg) {
 	uint8_t current_bit = 0;
+
+	clear_can_buffer(destination_buffer);
 
 	put_signed_int(destination_buffer, &current_bit, 15, msg.reading_thousandths);
 	put_bool(destination_buffer, &current_bit, 1, msg.surface_not_following);
@@ -155,6 +168,8 @@ uint8_t can_pack_surface_broadcast(uint8_t* destination_buffer, struct CANSurfac
 uint8_t can_pack_lidar_broadcast(uint8_t* destination_buffer, struct CANLidarBroadcast msg) {
 	uint8_t current_bit = 0;
 
+	clear_can_buffer(destination_buffer);
+
 	put_unsigned_int(destination_buffer, &current_bit, 15, msg.distance_mm);
 	put_bool(destination_buffer, &current_bit, 1, msg.alarm);
 
@@ -163,6 +178,8 @@ uint8_t can_pack_lidar_broadcast(uint8_t* destination_buffer, struct CANLidarBro
 
 uint8_t can_pack_node_general_config_command(uint8_t* destination_buffer, struct CANNodeGeneralConfigCommand msg) {
 	uint8_t current_bit = 0;
+
+	clear_can_buffer(destination_buffer);
 
 	put_bool(destination_buffer, &current_bit, 1, msg.driving_servo);
 	put_bool(destination_buffer, &current_bit, 1, msg.measuring_strain);
@@ -176,6 +193,8 @@ uint8_t can_pack_node_general_config_command(uint8_t* destination_buffer, struct
 
 uint8_t can_pack_servo_config_command(uint8_t* destination_buffer, struct CANServoConfigCommand msg) {
 	uint8_t current_bit = 0;
+
+	clear_can_buffer(destination_buffer);
 
 	put_unsigned_int(destination_buffer, &current_bit, 2, msg.surface);
 	put_unsigned_int(destination_buffer, &current_bit, 2, msg.scheme);
@@ -192,6 +211,8 @@ uint8_t can_pack_servo_config_command(uint8_t* destination_buffer, struct CANSer
 uint8_t can_pack_strain_gauge_config_command(uint8_t* destination_buffer, struct CANStrainGaugeConfigCommand msg) {
 	uint8_t current_bit = 0;
 
+	clear_can_buffer(destination_buffer);
+
 	put_unsigned_int(destination_buffer, &current_bit, 3, msg.osr);
 	put_unsigned_int(destination_buffer, &current_bit, 3, msg.gain);
 	put_unsigned_int(destination_buffer, &current_bit, 2, msg.buffer_depth_64_samples);
@@ -204,6 +225,8 @@ uint8_t can_pack_strain_gauge_config_command(uint8_t* destination_buffer, struct
 uint8_t can_pack_lidar_config_command(uint8_t* destination_buffer, struct CANLidarConfigCommand msg) {
 	uint8_t current_bit = 0;
 
+	clear_can_buffer(destination_buffer);
+
 	put_unsigned_int(destination_buffer, &current_bit, 8, msg.buffer_depth);
 	put_unsigned_int(destination_buffer, &current_bit, 16, msg.alarm_level);
 
@@ -213,12 +236,15 @@ uint8_t can_pack_lidar_config_command(uint8_t* destination_buffer, struct CANLid
 uint8_t can_pack_indicator_config_command(uint8_t* destination_buffer, struct CANIndicatorConfigCommand msg) {
 	uint8_t current_bit = 0;
 
+	clear_can_buffer(destination_buffer);
+
 	put_bool(destination_buffer, &current_bit, 1, msg.disable_buzzer);
 	put_unsigned_int(destination_buffer, &current_bit, 7, msg.invert_led);
 	put_unsigned_int(destination_buffer, &current_bit, 16, msg.buzzer_period_ms);
 
 	return (bits_to_dlc(current_bit - 1));
 }
+
 
 
 
