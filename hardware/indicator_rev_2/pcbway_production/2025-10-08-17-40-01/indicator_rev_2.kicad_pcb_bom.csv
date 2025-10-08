@@ -1,0 +1,9 @@
+﻿Designator,Quantity,Value,Footprint,Package,MPN,DNP,Mount_Type,Description
+BZ1,1,Buzzer,Buzzer_12x9.5RM7.6,"Plugin,D=12mm",KXG1203C,,tht,
+"C1, C2",2,0.1uF,C_0603_1608Metric,0603,CL10B104KA8NNNC,,smt,Unpolarized capacitor
+J1,1,Conn_01x04,JST_XH_S4B-XH-A_1x04_P2.50mm_Horizontal,"Push-Pull,P=2.5mm",S4B-XH-A(LF)(SN),,tht,"Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
+"LED1, LED2, LED3, LED4, LED5, LED6, LED7",7,LED,LED_D4.0mm,"Plugin,D=4mm",TJ-L4FYTGCRMFCSFLC2R-A5,,tht,
+"R1, R2, R3, R4, R5, R6, R7",7,430,R_0603_1608Metric,0603,0603WAF4300T5E,,smt,
+"R12, R8, R9",3,10k,R_0603_1608Metric,0603,0603WAJ0103T5E,,smt,Resistor
+U1,1,TCA6408ARSVR,QFN40P180X260X55-16N,UQFN-16(1.8x2.6),TCA6408ARSVR,,smt,
+U2,1,TLV70033DCKR,SOT65P210X110-5N,SC-70-5,TLV70033DCKR,,smt,
