@@ -88,7 +88,6 @@ static void MX_TIM3_Init(void);
 void can_process_config_message(struct WingModuleConfig* config, CAN_HandleTypeDef* can) {
 	int messages = HAL_CAN_GetRxFifoFillLevel(can, CAN_CONFIG_FIFO);
 
-
 	for (int i = 0; i < messages; i++) {
 		CAN_RxHeaderTypeDef header;
 		uint8_t buffer[8];

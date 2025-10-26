@@ -47,7 +47,7 @@ void can_update_node_filters(struct WingModuleConfig* config, CAN_HandleTypeDef*
 
 	HAL_CAN_ConfigFilter(can, &filter_for_light);
 
-	id_filter = config->servo.surface | CAN_COMMAND_LIGHT_ID_BASE;
+	id_filter = config->servo.surface | CAN_COMMAND_ANGLE_ID_BASE;
 	id_filter = (id_filter << 5) | CAN_IGNORE_EXTENDED_ID_HIGH;
 
 	CAN_FilterTypeDef filter_for_servo_angle = {
@@ -55,7 +55,7 @@ void can_update_node_filters(struct WingModuleConfig* config, CAN_HandleTypeDef*
 		.FilterScale = CAN_FILTERSCALE_32BIT,
 		.FilterActivation = CAN_FILTER_DISABLE,		// Assume disabled
 		.FilterFIFOAssignment = CAN_COMMAND_FIFO,
-		.FilterBank = CAN_COMMAND_LIGHT_FILTER_BANK,
+		.FilterBank = CAN_COMMAND_ANGLE_FILTER_BANK,
 		.FilterIdHigh = id_filter,
 		.FilterIdLow = CAN_IGNORE_EXTENDED_ID_LOW,
 		.FilterMaskIdHigh = 0,
